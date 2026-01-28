@@ -9,12 +9,12 @@ import numpy as np
 
 class LSTM_MLP(nn.Module):
     """
-    2层LSTM + 3层MLP
+    LSTM + MLP
     """
     
     def __init__(
         self,
-        input_features: int = 47,
+        input_features: int = 46,
         output_size: int = 3,
         lstm_hidden_size: int = 128,
         mlp_hidden_size: int = 128,
@@ -46,7 +46,6 @@ class LSTM_MLP(nn.Module):
     
     def forward(self, x, hidden=None):
         lstm_out, hidden = self.lstm(x, hidden)
-        print(f"LSTM输出形状: {lstm_out.shape}")
 
         output = self.mlp(lstm_out)
         
@@ -151,11 +150,11 @@ def load_csv_data(
     X_sequences = []
     y_sequences = []
 
-    for filepath in glob.glob('lin_vel_est_data/vel_est_train_*.csv'):
+    for filepath in glob.glob('lin_vel_est_data/vel_est_train_run_*.csv'):
         df = pd.read_csv(filepath, header=None)
         print(f"CSV数据形状: {df.shape}")
 
-        X_raw = pd.concat([df.iloc[:, 0:36], df.iloc[:, 37:48]], axis = 1).astype(np.float32)
+        X_raw = pd.concat([df.iloc[:, 1:36], df.iloc[:, 37:48]], axis = 1).astype(np.float32)
         y_raw = df.iloc[:, 48:51].values.astype(np.float32)
 
         for i in range(0, len(X_raw) - seq_len + 1, stride):
@@ -163,12 +162,12 @@ def load_csv_data(
             y_sequences.append(y_raw[i:i + seq_len])
     
     X_sequences = np.array(X_sequences)*100
-    # x_min = X_sequences.min(axis=(0, 1))  # 每个特征的最小值
-    # x_max = X_sequences.max(axis=(0, 1))  # 每个特征的最大值
+    # x_min = X_sequences.min(axis=(0, 1))
+    # x_max = X_sequences.max(axis=(0, 1))
     # X_sequences = 2 * (X_sequences - x_min) / (x_max - x_min + 1e-8) - 1
     y_sequences = np.array(y_sequences)*100
-    # y_min = y_sequences.min(axis=(0, 1))  # 每个特征的最小值
-    # y_max = y_sequences.max(axis=(0, 1))  # 每个特征的最大值
+    # y_min = y_sequences.min(axis=(0, 1))
+    # y_max = y_sequences.max(axis=(0, 1))
     # y_sequences = 2 * (y_sequences - y_min) / (y_max - y_min + 1e-8) - 1
     
     print(f"序列样本数: {len(X_sequences)}")
@@ -218,13 +217,7 @@ if __name__ == "__main__":
     print("\n" + "=" * 50)
     print("创建模型...")
     print("=" * 50)
-    model = LSTM_MLP(
-        input_features=47,
-        dropout=0.1
-    )
-    
-    print(f"模型结构:\n{model}")
-    print(f"\n模型参数量: {sum(p.numel() for p in model.parameters()):,}")
+    model = LSTM_MLP()
     
     print("\n" + "=" * 50)
     print("开始训练...")
