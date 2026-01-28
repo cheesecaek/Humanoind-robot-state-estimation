@@ -11,7 +11,7 @@ scaler_X = StandardScaler()
 scaler_y = StandardScaler()
 
 class MAPELoss(nn.Module):
-    """平均绝对百分比误差 (MAPE) 损失函数"""
+    """Mape 计算"""
     def __init__(self):
         super(MAPELoss, self).__init__()
     
@@ -274,7 +274,7 @@ if __name__ == "__main__":
 
     mape_all = torch.cat([mape_list[i].unsqueeze(0) for i in range(len(mape_list))], dim=0)
     print(mape_all.shape)
-    print(f"基线模型验证集MAPE: {mape_all.mean(dim=0)}")
+    print(f"Baseline Validation MAPE: {mape_all.mean(dim=0)}")
 
     print("\n" + "=" * 50)
     print("开始训练...")
@@ -284,7 +284,3 @@ if __name__ == "__main__":
         train_loader=train_loader,
         val_loader=val_loader,
     )
-    # 保存模型
-    print("\n" + "=" * 50)
-    print("保存模型...")
-    print("=" * 50)
